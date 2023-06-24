@@ -2,7 +2,7 @@ import unittest
 from src import pytrng
 
 
-class MyTestCase(unittest.TestCase):
+class Test(unittest.TestCase):
     def test_160_bit(self):
         """Test 160 bit – 20 byte"""
         r = pytrng.pytrng(160).generate_random()

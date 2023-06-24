@@ -1,11 +1,16 @@
 # pytrng
 
+<hr>
+
+![License: MIT](https://img.shields.io/github/license/gregor-gottschewski/pytrng)
+![Language: Python](https://img.shields.io/badge/Language-Python-blue)
+
 **A Python module to generate true random numbers.**
 
 _pytrng_ is a true random number generator (TRNG) based on physical events. It uses
 different inputs to generate a random bit array and does not need any special hardware.
 
-> Do not use this package to generate numbers for encryption software!
+> Do not use the output of this package for encryption software!
 
 ## Input pool
 The following input data is hashed (SHA1 to SHA512) and connected with XOR in a data pool:
@@ -27,7 +32,7 @@ is hashed.
 ## Installation and quickstart
 
 > pytrng is currently under development. You can find it on [**TestPyPi**](https://test.pypi.org/project/pytrng/)
-> and [**GitHub**](https://github.com/Gregor-Gottschewski/pytrng). I'm working to release it on the main Python Package Index in July.
+> and [**GitHub**](https://github.com/Gregor-Gottschewski/pytrng). I am working to release it on the main Python Package Index in July.
 
 You can install pytrng via pip:
 
@@ -46,13 +51,13 @@ print(int.from_bytes(random_num, byteorder='big')) # random_num as int
 
 You can receive raw data via the `DataCollector` class:
 ```python
-from .pytrng import DataCollector
+from pytrng import DataCollector
 dc = DataCollector(256) # 256-bit output data
-print("Mouse position: " + str(int.from_bytes(dc.get_mouse_position(), byteorder='big')))
-print("Time since epoch: " + str(int.from_bytes(dc.get_time_since_epoch(), byteorder='big')))
-print("System uptime: " + str(int.from_bytes(dc.get_sys_uptime(), byteorder='big')))
-print("Disk speed: " + str(int.from_bytes(dc.get_disk_speed(), byteorder='big')))
-print("Sensor temperatures: " + str(int.from_bytes(dc.get_sensors(), byteorder='big')))
+print("Mouse position: " + str(dc.get_mouse_position()))
+print("Time since epoch: " + str(dc.get_time_since_epoch()))
+print("System uptime: " + str(dc.get_sys_uptime()))
+print("Disk speed: " + str(dc.get_disk_speed()))
+print("Sensor temperatures: " + str(dc.get_sensors()))
 ```
 
 ## License
