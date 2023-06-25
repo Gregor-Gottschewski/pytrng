@@ -1,19 +1,18 @@
 # pytrng
 
-<hr>
-
 ![License: MIT](https://img.shields.io/github/license/gregor-gottschewski/pytrng)
 ![Language: Python](https://img.shields.io/badge/Language-Python-blue)
 
 **A Python module to generate true random numbers.**
 
-_pytrng_ is a true random number generator (TRNG) based on physical events. It uses
+_pytrng_ contains a true random number generator (TRNG) based on physical events, and a
+pseudo random number generator (PRNG). It uses
 different inputs to generate a random bit array and does not need any special hardware.
 
 > Do not use the output of this package for encryption software!
 
 ## Input pool
-The following input data is hashed (SHA1 to SHA512) and connected with XOR in a data pool:
+The following TRNG input data is hashed (SHA1 to SHA512) and connected with XOR:
 
 * mouse position
 * time since _epoch_
@@ -27,6 +26,8 @@ input and so on… That technically means that the result is the first input
 encrypted by the other inputs multiple times. To increase the security, the connected data
 is hashed.
 
+The model of the PRNG:
+
 ![pytrng structure image](images/pytrng_structure.jpg)
 
 ## Installation and quickstart
@@ -38,7 +39,7 @@ You can install pytrng via pip:
 
     pip install -i https://test.pypi.org/simple/ --no-deps pytrng
 
-To generate a 512-bit number initialize `pytrng` with `512` as a parameter (only `160`, `224`, `256`, `384` and `512` are
+Initialize `pytrng` with `512` as a parameter to generate a 512-bit number (only `160`, `224`, `256`, `384` and `512` are
 allowed):
 
 ```python
@@ -49,7 +50,7 @@ print(random_num) # random_num as bytes
 print(int.from_bytes(random_num, byteorder='big')) # random_num as int
 ```
 
-You can receive raw data via the `DataCollector` class:
+You can receive raw data via the `DataCollector` class (TRNG-data):
 ```python
 from pytrng import DataCollector
 dc = DataCollector(256) # 256-bit output data
@@ -58,6 +59,27 @@ print("Time since epoch: " + str(dc.get_time_since_epoch()))
 print("System uptime: " + str(dc.get_sys_uptime()))
 print("Disk speed: " + str(dc.get_disk_speed()))
 print("Sensor temperatures: " + str(dc.get_sensors()))
+```
+
+You can create your own `DataPool` if you do not want to use all the TRNG-data and/or add
+some custom data:
+```python
+from src.pytrng import pytrng
+from src.pytrng import DataPool
+from src.pytrng import DataCollector
+
+# custom data pool
+dp = DataPool(512)
+
+# collect data
+dc = DataCollector(512)
+dp.append(b'sh273w')            # a static custom value
+dp.append(dc.get_sensors())     # DataCollector sensor data
+dp.append(dc.get_sys_uptime())  # DataCollector system uptime
+
+# generate random bytes
+r = pytrng()
+r.generate_random(dp)
 ```
 
 ## License

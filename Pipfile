@@ -4,8 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-bitarray = "*"
-psutil = "*"
+bitarray = "==2.7.6"
+psutil = "==5.9.5"
+pynput = "*"
 
 [dev-packages]
 

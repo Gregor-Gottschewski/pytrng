@@ -45,14 +45,15 @@ class Test(unittest.TestCase):
         self.assertFalse(pytrng.check_balance(bits2, max_diff=5))
 
     def test_custom_random_generator(self):
-        r_list = pytrng.RandomBitList()
-        r_list.append(b"7erwer")
-        r_list.append(b"73jfdh")
-        r_list.append(b"92927W")
-        r = pytrng.pytrng(256).generate_random(data=r_list)
-        self.assertIsNotNone(r)
-        self.assertEqual(r, b'\xbe\x1dM>\xeb"bcA\x93/\xcd\xc7\x98Z\x13\x8f\xf1G\xa5\x1d(\x82\xe1'
-                            b'\xbc2\xde\x06F\x1f\xf5E')
+        dp = pytrng.DataPool(512)
+        dp.append(b'2hags')
+        dp.append(b'83fgd')
+        dp.append(b'#sdfx')
+        r = pytrng.pytrng(512).generate_random(dp)
+        self.assertEqual(r, b'\x02P\t~\xad\x9c\x7f\xa3\xe0[\x96Z\x8a\xcb\xc8\xbb{\x96\xe1m\x8d\x8a\xc0\xe9o\xae\xc0?,'
+                            b'\xb2\\z\x04\xfcv\xcb.\xa9r1\x98\xe9\\@r\xf1\x9f\xb0\xfa!\xfb\x0c#\xb5y\x06~3\x8azA9\x85'
+                            b'\xad'
+)
 
 
 if __name__ == '__main__':
