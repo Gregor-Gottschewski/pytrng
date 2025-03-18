@@ -6,12 +6,12 @@
 **A Python module to generate true random numbers.**
 
 _pytrng_ contains a true random number generator (TRNG) based on physical events, and a
-pseudo random number generator (PRNG). It uses
-different inputs to generate a random bit array and does not need any special hardware.
+pseudo random number generator (PRNG).
+It uses multiple inputs to generate a random bit array and does not need any extra hardware.
 
 > Do not use the output of this package for encryption software!
 
-## Input pool
+## Input Pool
 The following TRNG input data is hashed (SHA1 to SHA512) and connected with XOR:
 
 * mouse position
@@ -20,22 +20,20 @@ The following TRNG input data is hashed (SHA1 to SHA512) and connected with XOR:
 * disk speed (create and delete a temporary file)
 * sensor temperatures
 
-_XOR_ offers the security of the unbreakable One-Time-Pad (OTP).
-Each input serves as a key for the next input. The result is the new key for the next
-input and so on… That technically means that the result is the first input
-encrypted by the other inputs multiple times. To increase the security, the connected data
-is hashed.
+Every input is hashed and concatenated with the previous input.
+This result is hashed again and concatenated with the next input.
+When all inputs are hashed and concatenated, the result is hashed again used as output.
 
-The model of the PRNG:
+This model shows how that process works:
 
 ![pytrng structure image](images/pytrng_structure.jpg)
 
 ## Installation and quickstart
 
-> pytrng is currently under development. You can find it on [**TestPyPi**](https://test.pypi.org/project/pytrng/)
-> and [**GitHub**](https://github.com/Gregor-Gottschewski/pytrng). I am working to release it on the main Python Package Index in July.
+> pytrng is under development.
+> You find it on [**TestPyPi**](https://test.pypi.org/project/pytrng/) and [**GitHub**](https://github.com/Gregor-Gottschewski/pytrng).
 
-You can install pytrng via pip:
+You install pytrng via pip:
 
     pip install -i https://test.pypi.org/simple/ --no-deps pytrng
 
@@ -50,7 +48,8 @@ print(random_num) # random_num as bytes
 print(int.from_bytes(random_num, byteorder='big')) # random_num as int
 ```
 
-You can receive raw data via the `DataCollector` class (TRNG-data):
+You receive raw data using the `DataCollector` class (TRNG-data):
+
 ```python
 from pytrng import DataCollector
 dc = DataCollector(256) # 256-bit output data
@@ -61,8 +60,8 @@ print("Disk speed: " + str(dc.get_disk_speed()))
 print("Sensor temperatures: " + str(dc.get_sensors()))
 ```
 
-You can create your own `DataPool` if you do not want to use all the TRNG-data and/or add
-some custom data:
+You create your own `DataPool` to use custom input data:
+
 ```python
 from src.pytrng import pytrng
 from src.pytrng import DataPool
@@ -83,9 +82,10 @@ r.generate_random(dp)
 ```
 
 ## License
+
 **MIT License**
 
-> Copyright © 2023 Gregor Gottschewski
+> Copyright (c) 2023 - 2025 Gregor Gottschewski
 >
 > Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
 > documentation files (the “Software”), to deal in the Software without restriction, including without limitation the
