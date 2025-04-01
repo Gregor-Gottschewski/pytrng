@@ -1,4 +1,3 @@
-from bitarray import bitarray
 import os
 import time
 import psutil
@@ -32,64 +31,25 @@ class DataCollector:
         self.bit_length = bit_length
         self.byte_length = bit_length // 8
 
-    def get_mouse_position(self) -> bytes | None:
-        """Reads the current mouse x and y position and multiplies them
+    def get_cpu_jitter(self) -> bytes:
+        """ Builds a random number from the CPU jitter.
+
+        The process sleeps for 0.1 ms and then compares the time before and after the sleep.
+        Only the last bit of the time difference is used to create a random number.
+        The process is repeated for the number of bits in the output.
 
         Returns
         -------
         bytes
-            the hashed mouse position
-        None
-            if pynput couldn't been imported
+            the hashed CPU jitter
         """
-
-        if not gui:
-            return
-
-        mouse = Controller()
-        x = mouse.position[0] % ((2 ^ self.bit_length) - 1)
-        y = mouse.position[1] % ((2 ^ self.bit_length) - 1)
-        return (y * x).to_bytes(length=self.byte_length, byteorder="big")
-
-    def get_mouse_pos_pool(self, strength=5) -> bytes | None:
-        """Calls the get_mouse_position function multiple times and links their outputs using XOR.
-
-        Parameters
-        ----------
-        strength : int
-            sets how many times the mouse position should been read
-
-        Returns
-        -------
-        bytes
-            the hashed output
-        None
-            if pynput couldn't been imported
-        """
-
-        if not gui:
-            return
-
-        mouse_pos = bitarray()
-        for i in range(0, strength):
-            pos1 = bitarray()
-            pos1.frombytes(self.get_mouse_position())
-            time.sleep(0.15)
-            pos2 = bitarray()
-            pos2.frombytes(self.get_mouse_position())
-
-            if pos1 != pos2:
-                mouse_pos_new = pos1 ^ pos2
-            else:
-                mouse_pos_new = pos1
-
-            if len(mouse_pos) == 0:
-                mouse_pos = mouse_pos_new
-            else:
-                if mouse_pos_new != mouse_pos:
-                    mouse_pos ^= mouse_pos_new
-
-        return mouse_pos.tobytes()
+        out: bytes = b""
+        for _ in range(self.bit_length + 1):
+            t1 = time.perf_counter_ns()
+            time.sleep(0.0001)
+            t2 = time.perf_counter_ns()
+            out += ((t2 - t1) & 1).to_bytes(length=1, byteorder="big")
+        return out
 
     def get_time_since_epoch(self) -> bytes:
         """Returns the hashed time since epoch.

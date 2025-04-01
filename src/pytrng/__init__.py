@@ -55,7 +55,7 @@ class pytrng:
         if data_pool is None:
             custom_dp = False
             data_pool = DataPool(self.length)
-            data_pool.append(self.dc.get_mouse_pos_pool())
+            data_pool.append(self.dc.get_cpu_jitter())
             data_pool.append(self.dc.get_time_since_epoch())
             data_pool.append(self.dc.get_sys_uptime())
             data_pool.append(self.dc.get_disk_speed())
