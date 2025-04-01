@@ -4,11 +4,11 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pytrng"
-version = "0.0.1b2"
+version = "0.0.2"
 authors = [
-  { name="Gregor Gottschewski", email="gregorgott.software@icloud.com" },
+  { name="Gregor Gottschewski", email="contact@gregors-computer-lab.com" },
 ]
-description = "A small true random number generator."
+description = "A small true random number generator for eductional usage."
 readme = "README.md"
 requires-python = ">=3.7"
 classifiers = [
