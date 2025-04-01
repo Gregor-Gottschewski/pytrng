@@ -3,6 +3,8 @@ import os
 import time
 import psutil
 
+from sys import platform
+
 try:
     from pynput.mouse import Controller
     gui = True
@@ -144,6 +146,9 @@ class DataCollector:
         bytes
             hashed sensor temperatures
         """
+
+        if platform != "linux":
+            return b""
 
         out = 1
         sensor_classes = psutil.sensors_temperatures()
