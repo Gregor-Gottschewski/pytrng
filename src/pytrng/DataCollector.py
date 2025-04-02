@@ -1,16 +1,8 @@
 import os
 import time
 import psutil
-
 from sys import platform
 
-try:
-    from pynput.mouse import Controller
-    gui = True
-except ImportError as e:
-    gui = False
-    print(e)
-    print("WARNING: Skip mouse input.")
 
 
 class DataCollector:
@@ -44,7 +36,7 @@ class DataCollector:
             the hashed CPU jitter
         """
         out: bytes = b""
-        for _ in range(self.bit_length + 1):
+        for _ in range(self.bit_length):
             t1 = time.perf_counter_ns()
             time.sleep(0.0001)
             t2 = time.perf_counter_ns()
@@ -60,7 +52,7 @@ class DataCollector:
             the hashed time since epoch
         """
 
-        t = round(time.time() * 100 % ((2 ^ self.bit_length) - 1))
+        t = round(time.time() * 100 % ((2 ** self.bit_length) - 1))
         return t.to_bytes(length=self.byte_length, byteorder="big")
 
     def get_sys_uptime(self) -> bytes:
@@ -73,19 +65,19 @@ class DataCollector:
         """
 
         uptime = time.time() - psutil.boot_time()
-        t = round(uptime % ((2 ^ self.bit_length) - 1))
+        t = round(uptime % ((2 ** self.bit_length) - 1))
         return t.to_bytes(length=self.byte_length, byteorder="big")
 
     def get_disk_speed(self) -> bytes:
-        """Measures the time the machine needs to create a new file and deleting it.
+        """Measures the time between file creation and deletion.
 
         Returns
         -------
         bytes
-            the time between file creation and deletion
+            time between file creation and deletion
         """
 
-        file_path = os.path.expanduser("~") + os.sep + "temp_trng_file"
+        file_path = os.path.join(os.path.expanduser("~"), "temp_trng_file")
 
         start_t = time.time() * 100000
 
@@ -116,6 +108,6 @@ class DataCollector:
             temp = sensor_classes[sensor_in_class]
             for list_element in temp:
                 if list_element.current > 1:
-                    out *= round(list_element.current) % ((2 ^ self.bit_length) - 1)
+                    out *= round(list_element.current) % ((2 ** self.bit_length) - 1)
 
         return out.to_bytes(length=self.byte_length, byteorder="big")
