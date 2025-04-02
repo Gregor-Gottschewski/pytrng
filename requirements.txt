@@ -1,2 +1,2 @@
-bitarray~=2.7.5
-psutil~=5.9.5
+bitarray>=2.7.5
+psutil>=5.9.5
