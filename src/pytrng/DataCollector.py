@@ -4,6 +4,12 @@ import psutil
 from sys import platform
 
 
+def _get_last_byte(__data: int) -> int:
+    """Returns the last byte of the specified integer."""
+    if __data is None:
+        raise ValueError("__data is None")
+    return __data & 0xFF
+
 
 class DataCollector:
     """The DataCollector collects input data and hashes it."""
@@ -26,21 +32,22 @@ class DataCollector:
     def get_cpu_jitter(self) -> bytes:
         """ Builds a random number from the CPU jitter.
 
-        The process sleeps for 0.1 ms and then compares the time before and after the sleep.
-        Only the last bit of the time difference is used to create a random number.
-        The process is repeated for the number of bits in the output.
+        The CPU jitter is the time between two calls to perf_counter_ns().
+        Between these calls, the CPU is busy with a while loop.
+        A sleep cannot be used, because it would not be precise enough due to OS scheduling.
 
         Returns
         -------
         bytes
             the hashed CPU jitter
         """
-        out: bytes = b""
+        out = bytearray()
         for _ in range(self.bit_length):
             t1 = time.perf_counter_ns()
-            time.sleep(0.0001)
+            while time.perf_counter_ns() - t1 < 10:
+                pass
             t2 = time.perf_counter_ns()
-            out += ((t2 - t1) & 1).to_bytes(length=1, byteorder="big")
+            out.append(_get_last_byte(t2 - t1))
         return out
 
     def get_time_since_epoch(self) -> bytes:
@@ -79,16 +86,16 @@ class DataCollector:
 
         file_path = os.path.join(os.path.expanduser("~"), "temp_trng_file")
 
-        start_t = time.time() * 100000
+        out = bytearray()
 
-        f = open(file_path, "w")
-        f.close()
-        os.remove(file_path)
-
-        end_t = time.time() * 100000
-
-        t = round((end_t - start_t) % ((2 ^ self.bit_length) - 1))
-        return t.to_bytes(length=self.byte_length, byteorder="big")
+        for _ in range(self.byte_length):
+            start_t = time.perf_counter_ns()
+            with open(file_path, "wb") as f:
+                f.write(b"1")
+            os.remove(file_path)
+            end_t = time.perf_counter_ns()
+            out.append(_get_last_byte(end_t - start_t))
+        return bytes(out)
 
     def get_sensors(self) -> bytes:
         """Returns all sensor temperatures multiplied.
