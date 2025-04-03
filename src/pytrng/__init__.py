@@ -19,8 +19,7 @@ def check_balance(bits: list, max_diff):
         if input bits list contains same amount of ones and zeros
     """
 
-    zeros = 0
-    ones = 0
+    zeros = ones = 0
     for bit in bits:
         if bit == 0:
             zeros += 1
@@ -80,10 +79,10 @@ if __name__ == "__main__":
     print("*****************************************")
 
     while True:
-        while True:
-            bit_length = int(input("Enter bit length [160, 224, 256, 384, 512] (Ctrl+C to quit): "))
-            if bit_length in [160, 224, 256, 384, 512]:
-                break
-
-        print("Collecting data ...")
-        print("Generated number: " + str(int.from_bytes(pytrng(bit_length).generate_random(), byteorder="big")))
+        user_in = input("Enter bit length [160, 224, 256, 384, 512] // (q)uit: ")
+        if user_in.lower() == "q":
+            print("Bye!")
+            exit(0)
+        if user_in.isdecimal() and int(user_in) in [160, 224, 256, 384, 512]:
+            print("Collecting data ...")
+            print("Generated number: " + str(int.from_bytes(pytrng(int(user_in)).generate_random(), byteorder="big")))
