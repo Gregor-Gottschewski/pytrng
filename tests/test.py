@@ -52,8 +52,19 @@ class Test(unittest.TestCase):
         r = pytrng.pytrng(512).generate_random(dp)
         self.assertEqual(r, b'\x02P\t~\xad\x9c\x7f\xa3\xe0[\x96Z\x8a\xcb\xc8\xbb{\x96\xe1m\x8d\x8a\xc0\xe9o\xae\xc0?,'
                             b'\xb2\\z\x04\xfcv\xcb.\xa9r1\x98\xe9\\@r\xf1\x9f\xb0\xfa!\xfb\x0c#\xb5y\x06~3\x8azA9\x85'
-                            b'\xad'
-)
+                            b'\xad')
+
+    def test_disk_speed_data_collector(self):
+        b_len = 160
+        dc = pytrng.DataCollector(b_len)
+        dc.get_disk_speed()
+        self.assertEqual(len(dc.get_disk_speed()), b_len / 8)
+
+    def test_cpu_jitter(self):
+        b_len = 160
+        dc = pytrng.DataCollector(b_len)
+        dc.get_cpu_jitter()
+        self.assertEqual(len(dc.get_cpu_jitter()), b_len // 8)
 
 
 if __name__ == '__main__':
