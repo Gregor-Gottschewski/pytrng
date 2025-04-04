@@ -30,6 +30,13 @@ class DataPool:
         return m.digest()
 
     def append(self, __object: bytes):
+        """Adds data to the pool.
+
+        Parameters
+        ----------
+        __object : bytes
+            The bytes to be added to the pool.
+        """
         if __object is None:
             return
 

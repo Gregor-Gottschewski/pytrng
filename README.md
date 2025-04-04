@@ -5,19 +5,19 @@
 
 **A Python module to generate true random numbers.**
 
-_pytrng_ contains a true random number generator (TRNG) based on physical events, and a
-pseudo random number generator (PRNG).
-It uses multiple inputs to generate a random bit array and does not need any extra hardware.
+_pytrng_ contains a true random number generator (TRNG) and a pseudo random number generator (PRNG).
+It uses multiple inputs to generate a random bit array.
+No other external hardware is needed.
 
-> Do not use the output of this package for encryption software!
+> Do not use the output of this package for real world encryption software!
 
 ## Input Pool
 The following TRNG input data is hashed (SHA1 to SHA512) and connected with XOR:
 
-* mouse position
+* CPU jitter
 * time since _epoch_
 * system uptime
-* disk speed (create and delete a temporary file)
+* disk speed (create and delete a temporary file multiple times)
 * sensor temperatures
 
 Every input is hashed and concatenated with the previous input.
@@ -33,15 +33,16 @@ This model shows how that process works:
 > pytrng is under development.
 > You find it on [**TestPyPi**](https://test.pypi.org/project/pytrng/) and [**GitHub**](https://github.com/Gregor-Gottschewski/pytrng).
 
-You install pytrng via pip:
+Install pytrng via pip:
 
     pip install -i https://test.pypi.org/simple/ --no-deps pytrng
 
-Initialize `pytrng` with `512` as a parameter to generate a 512-bit number (only `160`, `224`, `256`, `384` and `512` are
+Initialize `pytrng` with `512` as a parameter to generate a 512-bit number (only `160`, `224`, `256`, `384` or `512` is
 allowed):
 
 ```python
 from pytrng import pytrng
+
 trng = pytrng(512)
 random_num = trng.generate_random()
 print(random_num) # random_num as bytes
@@ -52,6 +53,7 @@ You receive raw data using the `DataCollector` class (TRNG-data):
 
 ```python
 from pytrng import DataCollector
+
 dc = DataCollector(256) # 256-bit output data
 print("Mouse position: " + str(dc.get_mouse_position()))
 print("Time since epoch: " + str(dc.get_time_since_epoch()))
@@ -73,7 +75,7 @@ dp = DataPool(512)
 # collect data
 dc = DataCollector(512)
 dp.append(b'sh273w')            # a static custom value
-dp.append(dc.get_sensors())     # DataCollector sensor data
+dp.append(dc.get_sensors())     # DataCollector sensor data (only supported on linux)
 dp.append(dc.get_sys_uptime())  # DataCollector system uptime
 
 # generate random bytes
@@ -83,19 +85,4 @@ r.generate_random(dp)
 
 ## License
 
-**MIT License**
-
-> Copyright (c) 2023 - 2025 Gregor Gottschewski
->
-> Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-> documentation files (the “Software”), to deal in the Software without restriction, including without limitation the
-> rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
-> persons to whom the Software is furnished to do so, subject to the following conditions:
->
-> The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
-> Software.
->
-> THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-> WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
-> OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-> OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

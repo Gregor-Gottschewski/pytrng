@@ -42,7 +42,7 @@ class DataCollector:
             the hashed CPU jitter
         """
         out = bytearray()
-        for _ in range(self.bit_length):
+        for _ in range(self.bit_length // 8):
             t1 = time.perf_counter_ns()
             while time.perf_counter_ns() - t1 < 10:
                 pass
