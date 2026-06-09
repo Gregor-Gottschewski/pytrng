@@ -28,7 +28,10 @@ class DataCollector:
             raise ValueError("")
 
         self.bit_length = bit_length
-        self.byte_length = bit_length // 8
+
+    @property
+    def byte_length(self) -> int:
+        return self.bit_length // 8
 
     def get_mouse_position(self) -> bytes | None:
         """Reads the current mouse x and y position and multiplies them
