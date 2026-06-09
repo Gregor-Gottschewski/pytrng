@@ -1,4 +1,6 @@
 from bitarray import bitarray
+from functools import wraps
+from typing import Callable
 import os
 import time
 import psutil
@@ -11,6 +13,11 @@ except ImportError as e:
     print(e)
     print("WARNING: Skip mouse input.")
 
+def require_gui(func: Callable) -> Callable:
+    """Returns None if `gui=False`."""
+    @wraps(func)
+    def wrapper(*args, **kwargs) -> Any:
+        return func(*args, **kwargs) if gui else None
 
 class DataCollector:
     """The DataCollector collects input data and hashes it."""
@@ -30,6 +37,7 @@ class DataCollector:
         self.bit_length = bit_length
         self.byte_length = bit_length // 8
 
+    @require_gui
     def get_mouse_position(self) -> bytes | None:
         """Reads the current mouse x and y position and multiplies them
 
@@ -41,14 +49,12 @@ class DataCollector:
             if pynput couldn't been imported
         """
 
-        if not gui:
-            return
-
         mouse = Controller()
         x = mouse.position[0] % ((2 ^ self.bit_length) - 1)
         y = mouse.position[1] % ((2 ^ self.bit_length) - 1)
         return (y * x).to_bytes(length=self.byte_length, byteorder="big")
 
+    @require_gui
     def get_mouse_pos_pool(self, strength=5) -> bytes | None:
         """Calls the get_mouse_position function multiple times and links their outputs using XOR.
 
@@ -64,9 +70,6 @@ class DataCollector:
         None
             if pynput couldn't been imported
         """
-
-        if not gui:
-            return
 
         mouse_pos = bitarray()
         for i in range(0, strength):
