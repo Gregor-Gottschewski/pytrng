@@ -17,16 +17,17 @@ class DataPool:
         self.length = length
 
     def _hash_input(self, data: bytes) -> bytes:
-        if self.length == 256:
-            m = hashlib.sha256()
-        elif self.length == 160:
-            m = hashlib.sha1()
-        elif self.length == 384:
-            m = hashlib.sha384()
-        elif self.length == 224:
-            m = hashlib.sha224()
-        else:
-            m = hashlib.sha512()
+        match self.length:
+            case 256:
+                m = hashlib.sha256()
+            case 160:
+                m = hashlib.sha1()
+            case 384:
+                m = hashlib.sha384()
+            case 224:
+                m = hashlib.sha224()
+            case _:
+                m = hashlib.sha512()
 
         m.update(data)
         return m.digest()
