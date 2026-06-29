@@ -98,7 +98,7 @@ class DataCollector:
             the hashed time since epoch
         """
 
-        t = round(time.time() * 100 % ((2 ^ self.bit_length) - 1))
+        t = round(time.time() * 100 % ((2 ** self.bit_length) - 1))
         return t.to_bytes(length=self.byte_length, byteorder="big")
 
     def get_sys_uptime(self) -> bytes:
